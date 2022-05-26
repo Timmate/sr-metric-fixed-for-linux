@@ -17,8 +17,10 @@ function compile_linux
     %if you want to emulate what the makefile does ucomment below 2 lines:
     %mex mex_regressionRF_train.cpp reg_RF.cpp cokus.cpp -o mexRF_train -DMATLAB 
     %mex mex_regressionRF_predict.cpp reg_RF.cpp cokus.cpp -o mexRF_predict -DMATLAB 
+    mex src/mex_regressionRF_predict.cpp src/reg_RF.cpp src/cokus.cpp -output mexRF_predict -DMATLAB 
 
-    system('make mex;');
+    %system('make mex;');
+    system('make /usr/local/MATLAB/R2022a/bin/mex;');
 
     fprintf('Mex compiled\n')
 
