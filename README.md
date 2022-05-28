@@ -1,31 +1,18 @@
+For the original description, see the [original repo][org-repo].
 
+This repo contains the mex files needed for running Ma's code on a Linux system, as well as the changes made to the files that produced those mex files. Tested on Ubuntu 20.04 with g++/gcc 9.4.0, MATLAB R2022a.
 
-### Introduction
+Steps performed to accomplish this (generally, these follow the instructions from the "Troubleshooting" section of the README of [this repo][troubleshooting]; below, the *sr-metric* dir in paths can be replaced with *sr-metric-fixed-for-linux*, if you carry out the below instructions using this repo):
+1. Run *sr-metric/external/matlabPyrTools/MEX/compilePyrTools.m*.
+2. After execution, *compilePyrTools.m* generated new versions of 4 mex files: *upConv.mexa64*, *pointOp.mexa64*, *range2.mexa64*, *histo.mexa64*. Copy these to the parent dir (i.e., to *sr-metric/external/matlabPyrTools/*). These files already exist in that parent dir, so you'll need to overwrite those.
+3. Change line 82 in the file *sr-metric/external/randomforest-matlab/RF_Reg_C/src/mex_regressionRF_predict.cpp* to `plhs[0]=mxCreateNumericMatrix(n_size,1,mxDOUBLE_CLASS,mxREAL);`.
+4. Change the *sr-metric/external/randomforest-matlab/RF_Reg_C/compile_linux.m* so that it looks like [so][compile-linux]. Note that: 
+	  * The `-o` switch won't work, so use `-output` instead.
+	  * You must give the correct paths to the C++ files, i.e., precede them with `src/`, provided you will be running *compile_linux.m* from its directory, that is, from *sr-metric/external/randomforest-matlab/RF_Reg_C/*.
+	  * You might need to supply the full path to mex for your MATLAB installation if `make mex` won't work.
+6. Run *compile_linux.m* from its directory. This will generate the file *mexRF_predict.mexa64*, which is the file required to resolve the `undefined function or variable mexRF_predict` error. 
+7. That is it, the *mexRF_predict.mexa64* file should stay in *sr-metric/external/randomforest-matlab/RF_Reg_C* and doesn't need to be copied anywhere. You can now execute the code for Ma's metric, e.g., run *demo.m*.
 
-This is the research code for the CVIU 2017 paper: 
-
-[Chao Ma](https://www.chaoma.info), [Chih-Yuan Yang](https://scholar.google.com/citations?user=eUbmKwYAAAAJ&hl=en), [Xiaokang Yang](http://english.seiee.sjtu.edu.cn/english/detail/842_802.htm), and [Ming-Hsuan Yang](http://faculty.ucmerced.edu/mhyang/), " Learning a No-Reference Quality Metric for Single-Image Super-Rolution", CVIU 2017. 
-
-For more details, please visit our [Project page](https://sites.google.com/site/chaoma99/sr-metric)
-
-### Abstract
-
-Numerous single-image super-resolution algorithms have been proposed in the literature, but few studies address the problem of performance evaluation based on visual perception. While most super-resolution images are evaluated by full-reference metrics, the effectiveness is not clear, and the required ground-truth images are not always available in practice. To address these problems, we conduct human subject studies using a large set of super-resolution images and propose a no-reference metric learned from visual perceptual scores. Specifically, we design three types of low-level statistical features in both spatial and frequency domains to quantify super-resolved artifacts, and learn a two-stage regression model to predict the quality scores of super-resolution images without referring ground-truth images. Extensive experimental results show that the proposed metric is effective and efficient to assess the quality of super-resolution images based on human perception. 
-
-
-### Quick Start
-
-run "demo.m"
-
-
-### Citation
-
-If you find the code and dataset useful in your research, please consider citing:
-
-    @article{Ma-Metric-2017,
-        title={Learning a No-Reference Quality Metric for Single-Image Super-Rolution},
-        Author = {Ma, Chao and Yang, Chih-Yuan and Yang, Xiaokang and Yang, Ming-Hsuan},
-        journal = {Computer Vision and Image Understanding},
-        pages={1-16},
-        Year = {2017}
-    }
+[org-repo]: https://github.com/chaoma99/sr-metric
+[troubleshooting]: https://github.com/roimehrez/PIRM2018
+[compile-linux]: https://github.com/Timmate/sr-metric-fixed-for-linux/blob/master/external/randomforest-matlab/RF_Reg_C/compile_linux.m
